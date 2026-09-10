@@ -41,6 +41,38 @@ public class TasksController : ControllerBase
         return Ok(task);
     }
 
+    [HttpGet("api/projects/{projectId:guid}/tasks/{taskId:guid}/comments")]
+    public async Task<IActionResult> GetTaskComments(Guid projectId, Guid taskId)
+    {
+        var comments = await _mediator.Send(new GetTaskCommentsQuery
+        {
+            ProjectId = projectId,
+            TaskId = taskId
+        });
+        if (comments == null)
+            return NotFound(new { error = "Task not found." });
+
+        return Ok(comments);
+    }
+
+    [HttpPost("api/projects/{projectId:guid}/tasks/{taskId:guid}/comments")]
+    public async Task<IActionResult> AddTaskComment(
+        Guid projectId,
+        Guid taskId,
+        [FromBody] AddTaskCommentRequest request)
+    {
+        var comment = await _mediator.Send(new AddTaskCommentCommand
+        {
+            ProjectId = projectId,
+            TaskId = taskId,
+            Content = request.Content
+        });
+        if (comment == null)
+            return NotFound(new { error = "Task not found." });
+
+        return Ok(comment);
+    }
+
     [HttpPost("api/projects/{projectId:guid}/tasks")]
     public async Task<IActionResult> CreateTask(Guid projectId, [FromBody] CreateTaskRequest request)
     {
@@ -150,3 +182,5 @@ public record UpdateTaskRequest(
     int RowVersion);
 
 public record AssignTaskRequest(Guid UserId);
+
+public record AddTaskCommentRequest(string Content);

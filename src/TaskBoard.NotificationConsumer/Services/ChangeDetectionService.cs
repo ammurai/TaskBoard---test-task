@@ -24,7 +24,7 @@ public class ChangeDetectionService
     public async Task<bool> HasChangedAsync(Guid entityId, string entityType, string newHash)
     {
         var existingHash = await _notificationRepository.GetNotificationIndexHashAsync(entityId, entityType);
-        return existingHash == null || !existingHash.Equals(newHash, StringComparison.OrdinalIgnoreCase);
+        return existingHash != null && existingHash.Equals(newHash, StringComparison.OrdinalIgnoreCase);
     }
 
     public async Task UpdateHashAsync(Guid entityId, string entityType, string hash)

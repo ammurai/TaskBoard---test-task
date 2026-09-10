@@ -54,6 +54,20 @@ export const projectsReducer = createReducer(
     isLoading: false,
     error
   })),
+  on(ProjectsActions.archiveProject, state => ({ ...state, isLoading: true, error: null })),
+  on(ProjectsActions.archiveProjectSuccess, state => ({ ...state, isLoading: false })),
+  on(ProjectsActions.archiveProjectFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error
+  })),
+  on(ProjectsActions.unarchiveProject, state => ({ ...state, isLoading: true, error: null })),
+  on(ProjectsActions.unarchiveProjectSuccess, state => ({ ...state, isLoading: false })),
+  on(ProjectsActions.unarchiveProjectFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error
+  })),
   on(ProjectsActions.clearSelectedProject, state => ({
     ...state,
     selectedProject: null

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe, Location } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject, combineLatest, takeUntil } from 'rxjs';
@@ -15,13 +16,16 @@ import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { AppState } from '../../../store/app.state';
-import { loadTask, clearSelectedTask, deleteTask, assignTask, unassignTask } from '../../../store/tasks/tasks.actions';
+import { loadTask, loadTaskComments, addTaskComment, clearSelectedTask, deleteTask, assignTask, unassignTask } from '../../../store/tasks/tasks.actions';
 import {
   selectSelectedTask,
   selectTasksLoading,
   selectTasksError
 } from '../../../store/tasks/tasks.selectors';
+import { selectTaskComments } from '../../../store/tasks/tasks.selectors';
+import { TaskComment } from '../../../core/models/task-item.model';
 import { loadProject } from '../../../store/projects/projects.actions';
 import { selectSelectedProject } from '../../../store/projects/projects.selectors';
 import { TaskItemDetail } from '../../../core/models/task-item.model';
@@ -49,6 +53,8 @@ import { Router } from '@angular/router';
     MatTooltipModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
     TimeAgoPipe
   ],
   templateUrl: './task-detail.component.html',
@@ -58,11 +64,13 @@ export class TaskDetailComponent implements OnInit, OnDestroy {
   task$: Observable<TaskItemDetail | null>;
   isLoading$: Observable<boolean>;
   error$: Observable<string | null>;
+  comments$: Observable<TaskComment[]>;
   availableMembers$!: Observable<ProjectMember[]>;
 
   projectId!: string;
   taskId!: string;
   showAddAssignee = false;
+  commentContent = '';
 
   private readonly destroy$ = new Subject<void>();
 
@@ -76,12 +84,14 @@ export class TaskDetailComponent implements OnInit, OnDestroy {
     this.task$ = this.store.select(selectSelectedTask);
     this.isLoading$ = this.store.select(selectTasksLoading);
     this.error$ = this.store.select(selectTasksError);
+    this.comments$ = this.store.select(selectTaskComments);
   }
 
   ngOnInit(): void {
     this.projectId = this.route.snapshot.paramMap.get('projectId') ?? '';
     this.taskId = this.route.snapshot.paramMap.get('taskId') ?? '';
     this.store.dispatch(loadTask({ projectId: this.projectId, taskId: this.taskId }));
+    this.store.dispatch(loadTaskComments({ projectId: this.projectId, taskId: this.taskId }));
     this.store.dispatch(loadProject({ projectId: this.projectId }));
 
     this.availableMembers$ = combineLatest([
@@ -113,6 +123,18 @@ export class TaskDetailComponent implements OnInit, OnDestroy {
 
   onUnassignUser(userId: string): void {
     this.store.dispatch(unassignTask({ projectId: this.projectId, taskId: this.taskId, userId }));
+  }
+
+  onAddComment(): void {
+    const content = this.commentContent.trim();
+    if (!content) return;
+
+    this.store.dispatch(addTaskComment({
+      projectId: this.projectId,
+      taskId: this.taskId,
+      content
+    }));
+    this.commentContent = '';
   }
 
   openEditDialog(task: TaskItemDetail): void {

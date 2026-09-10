@@ -1,11 +1,12 @@
 import { createReducer, on } from '@ngrx/store';
-import { TaskItem, TaskItemDetail } from '../../core/models/task-item.model';
+import { TaskComment, TaskItem, TaskItemDetail } from '../../core/models/task-item.model';
 import { PagedResult } from '../../core/models/paged-result.model';
 import * as TasksActions from './tasks.actions';
 
 export interface TasksState {
   tasks: PagedResult<TaskItem> | null;
   selectedTask: TaskItemDetail | null;
+  comments: TaskComment[];
   isLoading: boolean;
   error: string | null;
 }
@@ -13,6 +14,7 @@ export interface TasksState {
 const initialState: TasksState = {
   tasks: null,
   selectedTask: null,
+  comments: [],
   isLoading: false,
   error: null
 };
@@ -41,6 +43,24 @@ export const tasksReducer = createReducer(
   on(TasksActions.loadTaskFailure, (state, { error }) => ({
     ...state,
     isLoading: false,
+    error
+  })),
+  on(TasksActions.loadTaskCommentsSuccess, (state, { comments }) => ({
+    ...state,
+    comments,
+    error: null
+  })),
+  on(TasksActions.loadTaskCommentsFailure, (state, { error }) => ({
+    ...state,
+    error
+  })),
+  on(TasksActions.addTaskCommentSuccess, (state, { comment }) => ({
+    ...state,
+    comments: [comment, ...state.comments],
+    error: null
+  })),
+  on(TasksActions.addTaskCommentFailure, (state, { error }) => ({
+    ...state,
     error
   })),
   on(TasksActions.createTask, state => ({ ...state, isLoading: true, error: null })),
@@ -117,5 +137,5 @@ export const tasksReducer = createReducer(
     isLoading: false,
     error
   })),
-  on(TasksActions.clearSelectedTask, state => ({ ...state, selectedTask: null }))
+  on(TasksActions.clearSelectedTask, state => ({ ...state, selectedTask: null, comments: [] }))
 );

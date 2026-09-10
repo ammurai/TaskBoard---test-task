@@ -4,6 +4,16 @@ public record AssigneeDto(Guid UserId, string FullName);
 
 public record CreatedByDto(Guid UserId, string FullName);
 
+public class TaskCommentDto
+{
+    public Guid Id { get; set; }
+    public Guid TaskItemId { get; set; }
+    public Guid UserId { get; set; }
+    public string UserName { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
+    public DateTime DateCreated { get; set; }
+}
+
 public class TaskHistoryDto
 {
     public string Action { get; set; } = string.Empty;
@@ -32,7 +42,7 @@ public class TaskItemDetailDto
     public Guid Id { get; set; }
     public Guid ProjectId { get; set; }
     public string Title { get; set; } = string.Empty;
-    public string? Details { get; set; }
+    public string? Description { get; set; }
     public string Status { get; set; } = string.Empty;
     public string? Priority { get; set; }
     public DateTime? DueDate { get; set; }

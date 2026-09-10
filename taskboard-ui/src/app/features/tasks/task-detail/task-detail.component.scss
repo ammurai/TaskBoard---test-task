@@ -116,6 +116,44 @@
   margin-bottom: 24px;
 }
 
+.comments-card {
+  margin-bottom: 24px;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.comment {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+
+  p {
+    margin: 6px 0 0;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  color: #555;
+
+  span {
+    color: #888;
+    font-size: 12px;
+  }
+}
+
+.comment-input {
+  width: 100%;
+  display: block;
+}
+
 .history-change {
   color: #666;
   font-size: 13px;

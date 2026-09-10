@@ -11,6 +11,15 @@ export interface TaskHistoryItem {
   date: string;
 }
 
+export interface TaskComment {
+  id: string;
+  taskItemId: string;
+  userId: string;
+  userName: string;
+  content: string;
+  dateCreated: string;
+}
+
 export interface TaskItem {
   id: string;
   projectId: string;

@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { TaskItem, TaskItemDetail } from '../../core/models/task-item.model';
+import { TaskComment, TaskItem, TaskItemDetail } from '../../core/models/task-item.model';
 import { PagedResult } from '../../core/models/paged-result.model';
 
 export const loadTasks = createAction(
@@ -29,6 +29,36 @@ export const loadTaskSuccess = createAction(
 
 export const loadTaskFailure = createAction(
   '[Tasks] Load Task Failure',
+  props<{ error: string }>()
+);
+
+export const loadTaskComments = createAction(
+  '[Tasks] Load Task Comments',
+  props<{ projectId: string; taskId: string }>()
+);
+
+export const loadTaskCommentsSuccess = createAction(
+  '[Tasks] Load Task Comments Success',
+  props<{ comments: TaskComment[] }>()
+);
+
+export const loadTaskCommentsFailure = createAction(
+  '[Tasks] Load Task Comments Failure',
+  props<{ error: string }>()
+);
+
+export const addTaskComment = createAction(
+  '[Tasks] Add Task Comment',
+  props<{ projectId: string; taskId: string; content: string }>()
+);
+
+export const addTaskCommentSuccess = createAction(
+  '[Tasks] Add Task Comment Success',
+  props<{ comment: TaskComment }>()
+);
+
+export const addTaskCommentFailure = createAction(
+  '[Tasks] Add Task Comment Failure',
   props<{ error: string }>()
 );
 

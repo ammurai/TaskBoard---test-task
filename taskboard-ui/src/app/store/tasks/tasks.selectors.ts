@@ -27,3 +27,8 @@ export const selectTaskItems = createSelector(
   selectTasks,
   pagedResult => pagedResult?.items ?? []
 );
+
+export const selectTaskComments = createSelector(
+  selectTasksState,
+  state => state.comments
+);

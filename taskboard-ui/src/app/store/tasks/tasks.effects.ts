@@ -43,6 +43,38 @@ export class TasksEffects {
     )
   );
 
+  loadTaskComments$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TasksActions.loadTaskComments),
+      switchMap(({ projectId, taskId }) =>
+        this.taskService.getTaskComments(projectId, taskId).pipe(
+          map(comments => TasksActions.loadTaskCommentsSuccess({ comments })),
+          catchError(err =>
+            of(TasksActions.loadTaskCommentsFailure({
+              error: err.error?.message || 'Failed to load comments'
+            }))
+          )
+        )
+      )
+    )
+  );
+
+  addTaskComment$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TasksActions.addTaskComment),
+      switchMap(({ projectId, taskId, content }) =>
+        this.taskService.addTaskComment(projectId, taskId, { content }).pipe(
+          map(comment => TasksActions.addTaskCommentSuccess({ comment })),
+          catchError(err =>
+            of(TasksActions.addTaskCommentFailure({
+              error: err.error?.message || 'Failed to add comment'
+            }))
+          )
+        )
+      )
+    )
+  );
+
   createTask$ = createEffect(() =>
     this.actions$.pipe(
       ofType(TasksActions.createTask),

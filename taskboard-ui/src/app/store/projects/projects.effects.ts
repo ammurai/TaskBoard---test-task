@@ -10,8 +10,8 @@ export class ProjectsEffects {
   loadProjects$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProjectsActions.loadProjects),
-      switchMap(() =>
-        this.projectService.getProjects().pipe(
+      switchMap(({ includeArchived }) =>
+        this.projectService.getProjects(includeArchived ?? false).pipe(
           map(projects => ProjectsActions.loadProjectsSuccess({ projects })),
           catchError(err =>
             of(
@@ -55,6 +55,44 @@ export class ProjectsEffects {
                 error: err.error?.message || 'Failed to create project'
               })
             )
+          )
+        )
+      )
+    )
+  );
+
+  archiveProject$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProjectsActions.archiveProject),
+      switchMap(({ projectId, includeArchived }) =>
+        this.projectService.archiveProject(projectId).pipe(
+          switchMap(() => [
+            ProjectsActions.archiveProjectSuccess(),
+            ProjectsActions.loadProjects({ includeArchived })
+          ]),
+          catchError(err =>
+            of(ProjectsActions.archiveProjectFailure({
+              error: err.error?.message || 'Failed to archive project'
+            }))
+          )
+        )
+      )
+    )
+  );
+
+  unarchiveProject$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProjectsActions.unarchiveProject),
+      switchMap(({ projectId, includeArchived }) =>
+        this.projectService.unarchiveProject(projectId).pipe(
+          switchMap(() => [
+            ProjectsActions.unarchiveProjectSuccess(),
+            ProjectsActions.loadProjects({ includeArchived })
+          ]),
+          catchError(err =>
+            of(ProjectsActions.unarchiveProjectFailure({
+              error: err.error?.message || 'Failed to unarchive project'
+            }))
           )
         )
       )

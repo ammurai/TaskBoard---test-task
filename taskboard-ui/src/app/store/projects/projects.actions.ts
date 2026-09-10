@@ -1,7 +1,10 @@
 import { createAction, props } from '@ngrx/store';
 import { Project, ProjectDetail } from '../../core/models/project.model';
 
-export const loadProjects = createAction('[Projects] Load Projects');
+export const loadProjects = createAction(
+  '[Projects] Load Projects',
+  props<{ includeArchived?: boolean }>()
+);
 
 export const loadProjectsSuccess = createAction(
   '[Projects] Load Projects Success',
@@ -40,6 +43,30 @@ export const createProjectSuccess = createAction(
 
 export const createProjectFailure = createAction(
   '[Projects] Create Project Failure',
+  props<{ error: string }>()
+);
+
+export const archiveProject = createAction(
+  '[Projects] Archive Project',
+  props<{ projectId: string; includeArchived: boolean }>()
+);
+
+export const archiveProjectSuccess = createAction('[Projects] Archive Project Success');
+
+export const archiveProjectFailure = createAction(
+  '[Projects] Archive Project Failure',
+  props<{ error: string }>()
+);
+
+export const unarchiveProject = createAction(
+  '[Projects] Unarchive Project',
+  props<{ projectId: string; includeArchived: boolean }>()
+);
+
+export const unarchiveProjectSuccess = createAction('[Projects] Unarchive Project Success');
+
+export const unarchiveProjectFailure = createAction(
+  '[Projects] Unarchive Project Failure',
   props<{ error: string }>()
 );
 

@@ -12,7 +12,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { AppState } from '../../../store/app.state';
-import { loadProjects, createProject } from '../../../store/projects/projects.actions';
+import { archiveProject, createProject, loadProjects, unarchiveProject } from '../../../store/projects/projects.actions';
 import {
   selectProjects,
   selectProjectsLoading,
@@ -43,6 +43,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   projects$: Observable<Project[]>;
   isLoading$: Observable<boolean>;
   error$: Observable<string | null>;
+  showArchived = false;
 
   displayedColumns = ['name', 'ownerName', 'memberCount', 'taskCount', 'status', 'actions'];
 
@@ -58,7 +59,30 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(loadProjects());
+    this.loadProjects();
+  }
+
+  toggleArchived(): void {
+    this.showArchived = !this.showArchived;
+    this.loadProjects();
+  }
+
+  onArchiveToggle(project: Project): void {
+    if (project.isArchived) {
+      this.store.dispatch(unarchiveProject({
+        projectId: project.id,
+        includeArchived: this.showArchived
+      }));
+    } else {
+      this.store.dispatch(archiveProject({
+        projectId: project.id,
+        includeArchived: this.showArchived
+      }));
+    }
+  }
+
+  private loadProjects(): void {
+    this.store.dispatch(loadProjects({ includeArchived: this.showArchived }));
   }
 
   ngOnDestroy(): void {

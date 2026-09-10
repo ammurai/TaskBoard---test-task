@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { TaskItem, TaskItemDetail } from '../models/task-item.model';
+import { TaskComment, TaskItem, TaskItemDetail } from '../models/task-item.model';
 import { PagedResult } from '../models/paged-result.model';
 
 export interface CreateTaskRequest {
@@ -25,6 +25,10 @@ export interface TaskSearchParams {
   projectId?: string;
   page?: number;
   pageSize?: number;
+}
+
+export interface AddTaskCommentRequest {
+  content: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -56,6 +60,23 @@ export class TaskService {
   getTask(projectId: string, taskId: string): Observable<TaskItemDetail> {
     return this.http.get<TaskItemDetail>(
       `${this.apiUrl}/projects/${projectId}/tasks/${taskId}`
+    );
+  }
+
+  getTaskComments(projectId: string, taskId: string): Observable<TaskComment[]> {
+    return this.http.get<TaskComment[]>(
+      `${this.apiUrl}/projects/${projectId}/tasks/${taskId}/comments`
+    );
+  }
+
+  addTaskComment(
+    projectId: string,
+    taskId: string,
+    request: AddTaskCommentRequest
+  ): Observable<TaskComment> {
+    return this.http.post<TaskComment>(
+      `${this.apiUrl}/projects/${projectId}/tasks/${taskId}/comments`,
+      request
     );
   }
 

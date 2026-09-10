@@ -36,12 +36,15 @@ public class TaskBoardMappingProfile : Profile
             .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.DateCreated))
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName));
 
+        CreateMap<TaskComment, TaskCommentDto>();
+
         // TaskItem -> TaskItemDto
         CreateMap<TaskItem, TaskItemDto>()
             .ForMember(dest => dest.Assignees, opt => opt.MapFrom(src => src.Assignees));
 
         // TaskItem -> TaskItemDetailDto
         CreateMap<TaskItem, TaskItemDetailDto>()
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
             .ForMember(dest => dest.Assignees, opt => opt.MapFrom(src => src.Assignees))
             .ForMember(dest => dest.History, opt => opt.MapFrom(src => src.History))
             .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => new CreatedByDto(

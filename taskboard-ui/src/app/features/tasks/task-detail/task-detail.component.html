@@ -97,6 +97,32 @@
     </mat-card-content>
   </mat-card>
 
+  <!-- Comments -->
+  <mat-card class="comments-card">
+    <mat-card-header>
+      <mat-card-title>Comments</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="comment-list" *ngIf="comments$ | async as comments">
+        <div class="comment" *ngFor="let comment of comments">
+          <div class="comment-header">
+            <strong>{{ comment.userName || 'User' }}</strong>
+            <span>{{ comment.dateCreated | timeAgo }}</span>
+          </div>
+          <p>{{ comment.content }}</p>
+        </div>
+        <p class="no-content" *ngIf="comments.length === 0">No comments yet.</p>
+      </div>
+      <mat-form-field appearance="outline" class="comment-input">
+        <mat-label>Add a comment</mat-label>
+        <textarea matInput [(ngModel)]="commentContent" maxlength="4000" rows="3"></textarea>
+      </mat-form-field>
+      <button mat-flat-button color="primary" (click)="onAddComment()" [disabled]="!commentContent.trim()">
+        Add comment
+      </button>
+    </mat-card-content>
+  </mat-card>
+
   <!-- History -->
   <mat-card class="history-card" *ngIf="task.history.length > 0">
     <mat-card-header>

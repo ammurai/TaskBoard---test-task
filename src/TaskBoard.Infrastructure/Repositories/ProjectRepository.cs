@@ -5,7 +5,7 @@ namespace TaskBoard.Infrastructure.Repositories;
 
 public interface IProjectRepository
 {
-    Task<IEnumerable<Project>> GetByUserIdAsync(Guid userId, bool isAdmin);
+    Task<IEnumerable<Project>> GetByUserIdAsync(Guid userId, bool isAdmin, bool includeArchived = false);
     Task<Project?> GetByIdAsync(Guid projectId);
     Task<Guid> InsertAsync(Project project);
     Task<IEnumerable<ProjectMember>> GetMembersAsync(Guid projectId);
@@ -13,17 +13,23 @@ public interface IProjectRepository
     Task RemoveMemberAsync(Guid projectId, Guid userId);
     Task<bool> IsMemberAsync(Guid projectId, Guid userId);
     Task<string?> GetMemberRoleAsync(Guid projectId, Guid userId);
+    Task SetArchivedAsync(Guid projectId, bool isArchived);
 }
 
 public class ProjectRepository : SqlRepositoryBase, IProjectRepository
 {
     public ProjectRepository(string connectionString) : base(connectionString) { }
 
-    public async Task<IEnumerable<Project>> GetByUserIdAsync(Guid userId, bool isAdmin)
+    public async Task<IEnumerable<Project>> GetByUserIdAsync(Guid userId, bool isAdmin, bool includeArchived = false)
     {
         var sql = LoadSql("Projects_GetByUserId.sql");
         using var conn = CreateConnection();
-        var projects = await conn.QueryAsync<Project>(sql, new { UserId = userId, IsAdmin = isAdmin ? 1 : 0 });
+        var projects = await conn.QueryAsync<Project>(sql, new
+        {
+            UserId = userId,
+            IsAdmin = isAdmin ? 1 : 0,
+            IncludeArchived = includeArchived ? 1 : 0
+        });
         return projects;
     }
 
@@ -89,5 +95,12 @@ public class ProjectRepository : SqlRepositoryBase, IProjectRepository
         const string sql = "SELECT Role FROM dbo.ProjectMembers WHERE ProjectId = @ProjectId AND UserId = @UserId";
         using var conn = CreateConnection();
         return await conn.QueryFirstOrDefaultAsync<string>(sql, new { ProjectId = projectId, UserId = userId });
+    }
+
+    public async Task SetArchivedAsync(Guid projectId, bool isArchived)
+    {
+        var sql = LoadSql("Projects_SetArchived.sql");
+        using var conn = CreateConnection();
+        await conn.ExecuteAsync(sql, new { ProjectId = projectId, IsArchived = isArchived });
     }
 }
